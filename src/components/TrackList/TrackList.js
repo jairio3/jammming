@@ -4,11 +4,19 @@ import {Track} from '../Track/Track.js';
 
 export class TrackList extends React.Component {
   render() {
+    const tracks = this.props.tracks.map(track => {
+      return (
+        <Track
+          key={track.id}
+          name={track.name}
+          artist={track.artist}
+          album={track.album}
+        />
+      );
+    });
     return (
       <div className="TrackList">
-        <Track name="The Bay" artist="Metronomy" album="The English Riviera"/>
-        <Track name="The Bay" artist="Metronomy" album="The English Riviera"/>
-        <Track name="The Bay" artist="Metronomy" album="The English Riviera"/>
+        {tracks}
       </div>
     );
   }
