@@ -28,12 +28,27 @@ export class App extends React.Component {
       playListName: PLAYLIST_NAME,
       playlistTracks: PLAYLIST_TRACKS,
     };
+    this.addTrack = this.addTrack.bind(this);
+  }
+
+  addTrack(track) {
+    const saved = this.state.playlistTracks.find((savedTrack) => {
+      return savedTrack.id === track.id;
+    });
+    if (saved) {
+      this.setState((state) => {
+        const updatedPlaylist = state.playlistTracks.concat(track);
+        return {
+          playlistTracks: updatedPlaylist
+        }
+      });
+    }
   }
 
   render() {
-    const searchResults = this.state.searchResults;
-    const playlistTracks = this.state.playlistTracks;
-    const playlistName = this.state.playlistName;
+    let searchResults = this.state.searchResults;
+    let playlistTracks = this.state.playlistTracks;
+    let playlistName = this.state.playlistName;
     return (
       <div>
         <h1>
@@ -42,7 +57,10 @@ export class App extends React.Component {
         <div className="App">
           <SearchBar />
           <div className="App-playlist">
-            <SearchResults searchResults={searchResults} />
+            <SearchResults
+              searchResults={searchResults}
+              onAdd={this.addTrack}
+            />
             <Playlist
               playListName={playlistName}
               playlistTracks={playlistTracks}
