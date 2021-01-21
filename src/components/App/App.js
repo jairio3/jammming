@@ -30,6 +30,7 @@ export class App extends React.Component {
     };
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
+    this.updatedPlaylistName = this.updatedPlaylistName.bind(this);
   }
 
   isSaved(track) {
@@ -43,7 +44,7 @@ export class App extends React.Component {
       this.setState((state) => {
         let updatedPlaylist = state.playlistTracks.concat(track);
         return {
-          playlistTracks: updatedPlaylist
+          playlistTracks: updatedPlaylist,
         };
       });
     }
@@ -54,9 +55,13 @@ export class App extends React.Component {
       this.setState({
         playlistTracks: this.state.playlistTracks.filter((savedTrack) => {
           return savedTrack.id !== track.id;
-        })
+        }),
       });
     }
+  }
+
+  updatedPlaylistName(name) {
+    this.setState({ playlistName: name });
   }
 
   render() {
@@ -65,6 +70,7 @@ export class App extends React.Component {
     let playlistName = this.state.playlistName;
     let addTrack = this.addTrack;
     let removeTrack = this.removeTrack;
+    let onNameChange = this.updatedPlaylistName;
     return (
       <div>
         <h1>
@@ -78,6 +84,7 @@ export class App extends React.Component {
               playListName={playlistName}
               playlistTracks={playlistTracks}
               onRemove={removeTrack}
+              onNameChange={onNameChange}
             />
           </div>
         </div>
