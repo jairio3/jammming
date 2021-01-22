@@ -26,13 +26,13 @@ export const Spotify = {
     }
   },
   search(term) {
+    let accessToken = this.getAccessToken();
     return fetch(`https://api.spotify.com/v1/search?type=track&q=${term}`, {
       method: "GET",
       headers: {
-        authorization: `Bearer ${accessToken}`,
-      },
-    })
-      .then((response) => {
+        authorization: `Bearer ${accessToken}`
+      }
+    }).then((response) => {
         return response.json();
       })
       .then((response) => {
@@ -47,4 +47,17 @@ export const Spotify = {
         });
       });
   },
+  savePlaylist(name, trackURIs) {
+    let accessToken = this.getAccessToken();
+    return fetch(`https://api.spotify.com/v1/me`, {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${accessToken}`
+      }
+    }).then((response) => {
+        console.log(response.json());
+        console.log(name);
+        console.log(trackURIs);
+      })
+  }
 };
