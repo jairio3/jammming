@@ -51,22 +51,25 @@ export const Spotify = {
         });
       });
   },
-  savePlaylist(name, trackURIs) {
+  async savePlaylist(name, trackURIs) {
     name = name || "My Playlist";
+    let userAccessToken = this.getAccessToken();
     let userID;
-    return fetch("https://api.spotify.com/v1/me/", {
-      headers: { authorization: `Bearer ${this.getAccessToken()}` },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((jsonResponse) => {
-        userID = jsonResponse.id;
-        return fetch(`https://api.spotify.com/v1/users/${userID}/playlists`, {
-          method: "POST",
-          headers: { authorization: `Bearer ${this.getAccessToken()}` },
-          body: JSON.stringify({ name: name }),
-        });
-      });
+    let profileResponse = await fetch("https://api.spotify.com/v1/me/", {
+      headers: { authorization: `Bearer ${userAccessToken}` },
+    }).then((response) => {
+      return response.json();
+    });
+    userID = profileResponse.id;
+    let playlistResponse = await fetch(
+      `https://api.spotify.com/v1/users/${userID}/playlists`,
+      {
+        method: "POST",
+        headers: { authorization: `Bearer ${userAccessToken}` },
+        body: JSON.stringify({ name: name }),
+      }
+    );
+    console.log(playlistResponse)
+    //return playlistResponse;
   },
 };

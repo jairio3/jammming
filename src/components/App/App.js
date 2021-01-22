@@ -53,10 +53,13 @@ export class App extends React.Component {
 
   async savePlaylist(name, trackURIs) {
     let resp = await Spotify.savePlaylist(name, trackURIs);
-    console.log(resp);
-    if (resp.ok === 201) {
-      this.setState({ playlistName: "New Playlist" });
-      this.setState({ playlistTracks: [] });
+    try {
+      if (resp.ok) {
+        this.setState({ playlistName: "New Playlist" });
+        this.setState({ playlistTracks: [] });
+      }
+    }catch(e) {
+      console.log(`Spotify.savePlaylist() error - ${e}`);
     }
   }
 
