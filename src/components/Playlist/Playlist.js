@@ -14,7 +14,8 @@ export class Playlist extends React.Component {
   }
 
   handleClick() {
-    this.props.onSave(this.props.playlistName, this.props.playlistTracks);
+    let trackURIs = this.props.playlistTracks.map( track => { return track.uri });
+    this.props.onSave(this.props.playlistName, trackURIs);
   }
 
   render() {

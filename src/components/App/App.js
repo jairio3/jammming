@@ -17,7 +17,7 @@ export class App extends React.Component {
     this.removeTrack = this.removeTrack.bind(this);
     this.updatedPlaylistName = this.updatedPlaylistName.bind(this);
     this.savePlaylist = this.savePlaylist.bind(this);
-    this.search = this.search.bind(this)
+    this.search = this.search.bind(this);
   }
 
   isSaved(track) {
@@ -52,7 +52,12 @@ export class App extends React.Component {
   }
 
   async savePlaylist(name, trackURIs) {
-    await Spotify.savePlaylist(name, trackURIs);
+    let resp = await Spotify.savePlaylist(name, trackURIs);
+    console.log(resp);
+    if (resp.ok === 201) {
+      this.setState({ playlistName: "New Playlist" });
+      this.setState({ playlistTracks: [] });
+    }
   }
 
   async search(term) {
