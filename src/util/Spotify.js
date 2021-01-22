@@ -72,7 +72,18 @@ export const Spotify = {
         headers: headers,
         body: JSON.stringify({ name: name }),
       }
-    );
+    ).then((response) => {
+      return response.json();
+    });
+    let playlistID = playlistResponse.id;
+    let addToPlistResponse = await fetch(
+      `https://api.spotify.com/v1/playlists/${playlistID}/tracks`,
+      {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({uris: trackURIs})
+    })
+    console.log(addToPlistResponse);
     return playlistResponse;
   },
 };

@@ -58,7 +58,7 @@ export class App extends React.Component {
         this.setState({ playlistName: "New Playlist" });
         this.setState({ playlistTracks: [] });
       }
-    }catch(e) {
+    } catch(e) {
       console.log(`Spotify.savePlaylist() error - ${e}`);
     }
   }
