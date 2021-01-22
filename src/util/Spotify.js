@@ -9,19 +9,20 @@ export const Spotify = {
     if (accessToken) {
       return accessToken;
     }
-
     let windowHref = window.location.href;
     let accessTokenInfo = windowHref.match(/access_token=([^&]*)/);
     let expirationDateInfo = windowHref.match(/expires_in=([^&]*)/);
 
     if (accessTokenInfo && expirationDateInfo) {
       let getAccessToken = accessTokenInfo[1];
-      let getExpirationDate = Number(expirationDateInfo[1]);
       accessToken = getAccessToken;
+      let getExpirationDate = Number(expirationDateInfo[1]);
+
       window.setTimeout(() => {
         accessToken = "";
         window.history.pushState("Access Token", null, "/");
       }, getExpirationDate * 1000);
+
       return accessToken;
     }
     if (!accessTokenInfo && !expirationDateInfo) {
@@ -54,22 +55,24 @@ export const Spotify = {
   async savePlaylist(name, trackURIs) {
     name = name || "My Playlist";
     let userAccessToken = this.getAccessToken();
+    let headers = { authorization: `Bearer ${userAccessToken}` };
     let userID;
+
     let profileResponse = await fetch("https://api.spotify.com/v1/me/", {
-      headers: { authorization: `Bearer ${userAccessToken}` },
+      headers: headers,
     }).then((response) => {
       return response.json();
     });
+
     userID = profileResponse.id;
     let playlistResponse = await fetch(
       `https://api.spotify.com/v1/users/${userID}/playlists`,
       {
         method: "POST",
-        headers: { authorization: `Bearer ${userAccessToken}` },
+        headers: headers,
         body: JSON.stringify({ name: name }),
       }
     );
-    console.log(playlistResponse)
-    //return playlistResponse;
+    return playlistResponse;
   },
 };
