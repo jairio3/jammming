@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const CLIENT_ID = process.env.REACT_APP_API_CLIENT_ID;
-const REDIRECT_URI = "http://localhost:3000/callback/";
+const REDIRECT_URI = "http://localhost:3000/";
 let accessToken;
 
 export const Spotify = {
@@ -9,27 +9,32 @@ export const Spotify = {
     if (accessToken) {
       return accessToken;
     }
-
     let windowHref = window.location.href;
-    let hasAccessToken = windowHref.match(/access_token=([^&]*)/);
-    let hasExpirationDate = windowHref.match(/expires_in=([^&]*)/);
+    let accessTokenInfo = windowHref.match(/access_token=([^&]*)/);
+    let expirationDateInfo = windowHref.match(/expires_in=([^&]*)/);
 
-    if (hasAccessToken && hasExpirationDate) {
-      let getAccessToken = hasAccessToken[1];
-      let getExpirationDate = Number(hasExpirationDate[1]);
+    if (accessTokenInfo && expirationDateInfo) {
+      let getAccessToken = accessTokenInfo[1];
       accessToken = getAccessToken;
-      window.setTimeout(() => (accessToken = ""), getExpirationDate * 1000);
-      window.history.pushState("Access Token", null, "/");
+      let getExpirationDate = Number(expirationDateInfo[1]);
+
+      window.setTimeout(() => {
+        accessToken = "";
+        window.history.pushState("Access Token", null, "/");
+      }, getExpirationDate * 1000);
+
       return accessToken;
-    } else {
+    }
+    if (!accessTokenInfo && !expirationDateInfo) {
       window.location = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&scope=playlist-modify-public&redirect_uri=${REDIRECT_URI}`;
     }
   },
   search(term) {
+    let userAccessToken = this.getAccessToken();
     return fetch(`https://api.spotify.com/v1/search?type=track&q=${term}`, {
       method: "GET",
       headers: {
-        authorization: `Bearer ${accessToken}`,
+        authorization: `Bearer ${userAccessToken}`,
       },
     })
       .then((response) => {
@@ -46,5 +51,39 @@ export const Spotify = {
           };
         });
       });
+  },
+  async savePlaylist(name, trackURIs) {
+    name = name || "My Playlist";
+    let userAccessToken = this.getAccessToken();
+    let headers = { authorization: `Bearer ${userAccessToken}` };
+    let userID;
+
+    let profileResponse = await fetch("https://api.spotify.com/v1/me/", {
+      headers: headers,
+    }).then((response) => {
+      return response.json();
+    });
+
+    userID = profileResponse.id;
+    let playlistResponse = await fetch(
+      `https://api.spotify.com/v1/users/${userID}/playlists`,
+      {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({ name: name }),
+      }
+    ).then((response) => {
+      return response.json();
+    });
+    let playlistID = playlistResponse.id;
+    let addToPlistResponse = await fetch(
+      `https://api.spotify.com/v1/playlists/${playlistID}/tracks`,
+      {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({uris: trackURIs})
+    })
+    console.log(addToPlistResponse);
+    return playlistResponse;
   },
 };
