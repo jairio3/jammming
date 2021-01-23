@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const CLIENT_ID = process.env.REACT_APP_API_CLIENT_ID;
-const REDIRECT_URI = "http://localhost:3000/";
+const REDIRECT_URI = "https://usejammming.surge.sh";
 let accessToken;
 
 export const Spotify = {
@@ -81,9 +81,9 @@ export const Spotify = {
       {
         method: "POST",
         headers: headers,
-        body: JSON.stringify({uris: trackURIs})
-    })
-    console.log(addToPlistResponse);
-    return playlistResponse;
+        body: JSON.stringify({ uris: trackURIs }),
+      }
+    );
+    return addToPlistResponse;
   },
 };
